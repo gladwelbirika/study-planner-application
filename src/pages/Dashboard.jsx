@@ -9,6 +9,8 @@ function Dashboard() {
   const [priority, setPriority] = useState("low");
   const [deadline, setDeadline] = useState("");
 
+  const [editingTaskId, setEditingTaskId] = useState(null);
+
   const token = localStorage.getItem("token");
 
   // FETCH TASKS
@@ -30,27 +32,36 @@ function Dashboard() {
     fetchTasks();
   }, []);
 
-  // CREATE TASK
-  const handleCreateTask = async (e) => {
+  // CREATE / UPDATE TASK
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await API.post(
-        "/tasks",
-        {
-          title,
-          description,
-          priority,
-          deadline,
-        },
-        {
+      const payload = {
+        title,
+        description,
+        priority,
+        deadline,
+      };
+
+      if (editingTaskId) {
+        await API.put(`/tasks/${editingTaskId}`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
+        });
 
-      alert("Task created successfully");
+        alert("Task updated successfully");
+        setEditingTaskId(null);
+      } else {
+        await API.post("/tasks", payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        alert("Task created successfully");
+      }
 
       setTitle("");
       setDescription("");
@@ -59,7 +70,7 @@ function Dashboard() {
 
       fetchTasks();
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to create task");
+      alert(error.response?.data?.message || "Operation failed");
     }
   };
 
@@ -83,8 +94,8 @@ function Dashboard() {
     <div style={{ padding: "20px" }}>
       <h1>Dashboard</h1>
 
-      {/* CREATE TASK FORM */}
-      <form onSubmit={handleCreateTask}>
+      {/* FORM */}
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Task title"
@@ -119,20 +130,51 @@ function Dashboard() {
 
         <br />
 
-        <button type="submit">Create Task</button>
+        <button type="submit">
+          {editingTaskId ? "Update Task" : "Create Task"}
+        </button>
+
+        {editingTaskId && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingTaskId(null);
+              setTitle("");
+              setDescription("");
+              setPriority("low");
+              setDeadline("");
+            }}
+          >
+            Cancel Edit
+          </button>
+        )}
       </form>
 
       <hr />
 
       {/* TASK LIST */}
       {tasks.map((task) => (
-        <div key={task._id}>
+        <div key={task._id} style={{ marginBottom: "10px" }}>
           <h3>{task.title}</h3>
           <p>{task.description}</p>
           <small>{task.priority}</small>
 
+          <br />
+
           <button onClick={() => handleDeleteTask(task._id)}>
             Delete
+          </button>
+
+          <button
+            onClick={() => {
+              setEditingTaskId(task._id);
+              setTitle(task.title);
+              setDescription(task.description);
+              setPriority(task.priority);
+              setDeadline(task.deadline?.split("T")[0]);
+            }}
+          >
+            Edit
           </button>
         </div>
       ))}
