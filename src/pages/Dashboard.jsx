@@ -13,6 +13,11 @@ function Dashboard() {
 
   const token = localStorage.getItem("token");
 
+  const handleLogout = () => {
+  localStorage.removeItem("token");
+  window.location.href = "/";
+};
+
   // FETCH TASKS
   const fetchTasks = async () => {
     try {
@@ -93,6 +98,10 @@ function Dashboard() {
   return (
     <div style={{ padding: "20px" }}>
       <h1>Dashboard</h1>
+
+      <button onClick={handleLogout}>
+       Logout
+       </button>
 
       {/* FORM */}
       <form onSubmit={handleSubmit}>
