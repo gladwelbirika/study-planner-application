@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../utils/api";
 
 function Dashboard() {
-    const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
 
   const [title, setTitle] = useState("");
@@ -15,13 +15,15 @@ function Dashboard() {
   const token = localStorage.getItem("token");
 
   const handleLogout = () => {
-  localStorage.removeItem("token");
-  window.location.href = "/";
-};
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
 
   // FETCH TASKS
   const fetchTasks = async () => {
     try {
+      setLoading(true);
+
       const res = await API.get("/tasks", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -31,6 +33,8 @@ function Dashboard() {
       setTasks(res.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,9 +104,7 @@ function Dashboard() {
     <div style={{ padding: "20px" }}>
       <h1>Dashboard</h1>
 
-      <button onClick={handleLogout}>
-       Logout
-       </button>
+      <button onClick={handleLogout}>Logout</button>
 
       {/* FORM */}
       <form onSubmit={handleSubmit}>
@@ -163,31 +165,37 @@ function Dashboard() {
       <hr />
 
       {/* TASK LIST */}
-      {tasks.map((task) => (
-        <div key={task._id} style={{ marginBottom: "10px" }}>
-          <h3>{task.title}</h3>
-          <p>{task.description}</p>
-          <small>{task.priority}</small>
+      {loading ? (
+        <p>Loading tasks...</p>
+      ) : tasks.length === 0 ? (
+        <p>No tasks found</p>
+      ) : (
+        tasks.map((task) => (
+          <div key={task._id} style={{ marginBottom: "10px" }}>
+            <h3>{task.title}</h3>
+            <p>{task.description}</p>
+            <small>{task.priority}</small>
 
-          <br />
+            <br />
 
-          <button onClick={() => handleDeleteTask(task._id)}>
-            Delete
-          </button>
+            <button onClick={() => handleDeleteTask(task._id)}>
+              Delete
+            </button>
 
-          <button
-            onClick={() => {
-              setEditingTaskId(task._id);
-              setTitle(task.title);
-              setDescription(task.description);
-              setPriority(task.priority);
-              setDeadline(task.deadline?.split("T")[0]);
-            }}
-          >
-            Edit
-          </button>
-        </div>
-      ))}
+            <button
+              onClick={() => {
+                setEditingTaskId(task._id);
+                setTitle(task.title);
+                setDescription(task.description);
+                setPriority(task.priority);
+                setDeadline(task.deadline?.split("T")[0]);
+              }}
+            >
+              Edit
+            </button>
+          </div>
+        ))
+      )}
     </div>
   );
 }
