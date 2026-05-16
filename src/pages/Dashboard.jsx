@@ -63,6 +63,22 @@ function Dashboard() {
     }
   };
 
+  // DELETE TASK
+  const handleDeleteTask = async (id) => {
+    try {
+      await API.delete(`/tasks/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Task deleted successfully");
+      fetchTasks();
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to delete task");
+    }
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>Dashboard</h1>
@@ -114,28 +130,14 @@ function Dashboard() {
           <h3>{task.title}</h3>
           <p>{task.description}</p>
           <small>{task.priority}</small>
+
+          <button onClick={() => handleDeleteTask(task._id)}>
+            Delete
+          </button>
         </div>
       ))}
     </div>
   );
-  //delete task
-  const handleDeleteTask = async (id) => {
-  try {
-    const token = localStorage.getItem("token");
-
-    await API.delete(`/tasks/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    alert("Task deleted successfully");
-
-    fetchTasks();
-  } catch (error) {
-    alert(error.response?.data?.message || "Failed to delete task");
-  }
-};
 }
 
 export default Dashboard;
