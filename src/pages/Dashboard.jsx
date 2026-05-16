@@ -118,6 +118,24 @@ function Dashboard() {
       ))}
     </div>
   );
+  //delete task
+  const handleDeleteTask = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await API.delete(`/tasks/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    alert("Task deleted successfully");
+
+    fetchTasks();
+  } catch (error) {
+    alert(error.response?.data?.message || "Failed to delete task");
+  }
+};
 }
 
 export default Dashboard;
