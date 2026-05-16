@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../utils/api";
 
 function Dashboard() {
+    const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
 
   const [title, setTitle] = useState("");
