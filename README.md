@@ -1,18 +1,64 @@
-# React + Vite
+# StudySync – Study Planner App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+StudySync is a web-based study planner application that helps students organize tasks, manage deadlines, and improve productivity through a centralized dashboard.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Problem Statement
+Students often struggle to manage assignments, deadlines, and study schedules using scattered tools, leading to missed deadlines and poor organization.
 
-## React Compiler
+---
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Solution
+StudySync provides a simple and centralized platform where students can:
+- Create and manage tasks
+- Set deadlines and priorities
+- Track progress
+- Stay organized through a dashboard
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### User Features
+- User registration and login
+- Create, edit, delete tasks
+- Set deadlines and priorities
+- Mark tasks as completed
+- View tasks on dashboard
+
+### Admin Features
+- Manage users
+- View all tasks
+- Delete inappropriate tasks
+- Monitor platform activity
+
+---
+
+## Tech Stack
+- Frontend: React, Tailwind CSS  
+- Backend: Node.js, Express  
+- Database: MongoDB  
+- Deployment: Vercel  
+- CI/CD: GitHub Actions  
+
+---
+
+## Deployment
+The project is deployed on Vercel and automatically updates on push from GitHub.
+
+---
+
+## Live Demo
+Replace with your deployed link
+
+---
+
+## Installation (Local Setup)
+
+```bash
+git clone <repo-link>
+cd project-folder
+npm install
+npm start
