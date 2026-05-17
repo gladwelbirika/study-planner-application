@@ -19,7 +19,6 @@ function Dashboard() {
     window.location.href = "/";
   };
 
-  // FETCH TASKS
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -42,35 +41,22 @@ function Dashboard() {
     fetchTasks();
   }, []);
 
-  // CREATE / UPDATE TASK
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const payload = {
-        title,
-        description,
-        priority,
-        deadline,
-      };
+      const payload = { title, description, priority, deadline };
 
       if (editingTaskId) {
         await API.put(`/tasks/${editingTaskId}`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        alert("Task updated successfully");
         setEditingTaskId(null);
       } else {
         await API.post("/tasks", payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
-        alert("Task created successfully");
       }
 
       setTitle("");
@@ -84,144 +70,170 @@ function Dashboard() {
     }
   };
 
-  // DELETE TASK
   const handleDeleteTask = async (id) => {
     try {
       await API.delete(`/tasks/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert("Task deleted successfully");
       fetchTasks();
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to delete task");
+      alert("Failed to delete task");
     }
   };
-  // TOGGLE TASK COMPLETION
-const handleToggleComplete = async (task) => {
-  try {
-    await API.put(
-      `/tasks/${task._id}`,
-      {
-        completed: !task.completed,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
 
-    fetchTasks();
-  } catch (error) {
-    alert("Failed to update task");
-  }
-};
+  const handleToggleComplete = async (task) => {
+    try {
+      await API.put(
+        `/tasks/${task._id}`,
+        { completed: !task.completed },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      fetchTasks();
+    } catch (error) {
+      alert("Failed to update task");
+    }
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Dashboard</h1>
+    <div className="min-h-screen bg-softWhite text-deepBlack px-4 md:px-10 py-6">
+      
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-lilac">
+          StudySync Dashboard
+        </h1>
 
-      <button onClick={handleLogout}>Logout</button>
+        <button
+          onClick={handleLogout}
+          className="bg-lilac text-white px-4 py-2 rounded-lg hover:opacity-80 w-full md:w-auto"
+        >
+          Logout
+        </button>
+      </div>
 
       {/* FORM */}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Task title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow-md border border-lilac/20 mb-6">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-        <br />
+          <input
+            className="p-2 border rounded"
+            type="text"
+            placeholder="Task title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
 
-        <input
-          type="text"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+          <input
+            className="p-2 border rounded"
+            type="text"
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
-        <br />
-
-        <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-
-        <br />
-
-        <input
-          type="date"
-          value={deadline}
-          onChange={(e) => setDeadline(e.target.value)}
-        />
-
-        <br />
-
-        <button type="submit">
-          {editingTaskId ? "Update Task" : "Create Task"}
-        </button>
-
-        {editingTaskId && (
-          <button
-            type="button"
-            onClick={() => {
-              setEditingTaskId(null);
-              setTitle("");
-              setDescription("");
-              setPriority("low");
-              setDeadline("");
-            }}
+          <select
+            className="p-2 border rounded"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
           >
-            Cancel Edit
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+
+          <input
+            className="p-2 border rounded"
+            type="date"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+          />
+
+          <button
+            type="submit"
+            className="bg-lilac text-white py-2 rounded-lg col-span-1 md:col-span-2"
+          >
+            {editingTaskId ? "Update Task" : "Create Task"}
           </button>
-        )}
-      </form>
 
-      <hr />
-
-      {/* TASK LIST */}
-      {loading ? (
-        <p>Loading tasks...</p>
-      ) : tasks.length === 0 ? (
-        <p>No tasks found</p>
-      ) : (
-        tasks.map((task) => (
-          <div key={task._id} style={{ marginBottom: "10px" }}>
-            <h3>{task.title}</h3>
-            <p>{task.description}</p>
-            <small>{task.priority}</small>
-
-<p>
-  Status: {task.completed ? "Completed ✅" : "Pending ⏳"}
-</p>
-
-            <br />
-
-            <button onClick={() => handleDeleteTask(task._id)}>
-              Delete
-            </button>
-            <button onClick={() => handleToggleComplete(task)}>
-  {task.completed ? "Mark Pending" : "Mark Complete"}
-</button>
-
+          {editingTaskId && (
             <button
+              type="button"
               onClick={() => {
-                setEditingTaskId(task._id);
-                setTitle(task.title);
-                setDescription(task.description);
-                setPriority(task.priority);
-                setDeadline(task.deadline?.split("T")[0]);
+                setEditingTaskId(null);
+                setTitle("");
+                setDescription("");
+                setPriority("low");
+                setDeadline("");
               }}
+              className="border border-lilac text-lilac py-2 rounded-lg col-span-1 md:col-span-2"
             >
-              Edit
+              Cancel Edit
             </button>
-          </div>
-        ))
+          )}
+        </form>
+      </div>
+
+      {/* TASKS */}
+      {loading ? (
+        <p className="text-center">Loading tasks...</p>
+      ) : tasks.length === 0 ? (
+        <p className="text-center">No tasks found</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+          {tasks.map((task) => (
+            <div
+              key={task._id}
+              className="bg-white p-4 rounded-xl shadow border border-lilac/20"
+            >
+              <h3 className="text-lg font-semibold">{task.title}</h3>
+              <p className="text-gray-600 text-sm">{task.description}</p>
+
+              <p className="text-sm text-lilac mt-2">
+                Priority: {task.priority}
+              </p>
+
+              <p className="text-sm mt-1">
+                Status:{" "}
+                {task.completed ? "Completed ✅" : "Pending ⏳"}
+              </p>
+
+              <div className="flex flex-col md:flex-row gap-2 mt-4">
+                
+                <button
+                  onClick={() => handleDeleteTask(task._id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded w-full"
+                >
+                  Delete
+                </button>
+
+                <button
+                  onClick={() => handleToggleComplete(task)}
+                  className="border border-lilac text-lilac px-3 py-1 rounded w-full"
+                >
+                  {task.completed ? "Pending" : "Complete"}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setEditingTaskId(task._id);
+                    setTitle(task.title);
+                    setDescription(task.description);
+                    setPriority(task.priority);
+                    setDeadline(task.deadline?.split("T")[0]);
+                  }}
+                  className="bg-lilac text-white px-3 py-1 rounded w-full"
+                >
+                  Edit
+                </button>
+
+              </div>
+            </div>
+          ))}
+
+        </div>
       )}
     </div>
   );

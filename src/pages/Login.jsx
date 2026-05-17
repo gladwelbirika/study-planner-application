@@ -1,9 +1,12 @@
 import { useState } from "react";
 import API from "../utils/api";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,41 +17,70 @@ function Login() {
         password,
       });
 
+      console.log(res.data);
+
+      // store auth data
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.user.role);
 
-      alert("Login successful");
+      // ✅ FIX: use react navigation instead of full page reload
+      const role = res.data.user.role;
 
-      window.location.href = "/dashboard";
-    } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+
+    } catch (err) {
+      alert("Login failed");
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "auto" }}>
-      <h2>Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-softWhite px-4">
 
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <div className="bg-white w-full max-w-sm md:max-w-md p-6 md:p-8 rounded-2xl shadow-lg border border-lilac/20">
 
-        <br />
+        <h1 className="text-2xl md:text-3xl font-bold text-lilac mb-6 text-center">
+          StudySync Login
+        </h1>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <form onSubmit={handleLogin} className="space-y-4">
 
-        <br />
+          <input
+            className="w-full p-3 border rounded-lg outline-none focus:border-lilac"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <button type="submit">Login</button>
-      </form>
+          <input
+            className="w-full p-3 border rounded-lg outline-none focus:border-lilac"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-lilac text-white py-3 rounded-lg hover:opacity-90 transition"
+          >
+            Login
+          </button>
+
+        </form>
+
+        <p className="text-sm text-center mt-4">
+          Don’t have an account?{" "}
+          <Link to="/register" className="text-lilac font-semibold">
+            Register
+          </Link>
+        </p>
+
+      </div>
     </div>
   );
 }
