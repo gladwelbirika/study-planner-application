@@ -196,11 +196,18 @@ const handleToggleComplete = async (task) => {
             <p>{task.description}</p>
             <small>{task.priority}</small>
 
+<p>
+  Status: {task.completed ? "Completed ✅" : "Pending ⏳"}
+</p>
+
             <br />
 
             <button onClick={() => handleDeleteTask(task._id)}>
               Delete
             </button>
+            <button onClick={() => handleToggleComplete(task)}>
+  {task.completed ? "Mark Pending" : "Mark Complete"}
+</button>
 
             <button
               onClick={() => {
