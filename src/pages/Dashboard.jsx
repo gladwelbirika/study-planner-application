@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
+  const token = useMemo(() => localStorage.getItem("token"), []);
+
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
 
@@ -12,11 +17,18 @@ function Dashboard() {
 
   const [editingTaskId, setEditingTaskId] = useState(null);
 
-  const token = localStorage.getItem("token");
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, [token, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/";
+    localStorage.removeItem("role");
+    navigate("/");
+    window.location.reload();
   };
 
   const fetchTasks = async () => {
@@ -38,8 +50,10 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (token) {
+      fetchTasks();
+    }
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +112,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-softWhite text-deepBlack px-4 md:px-10 py-6">
-      
+
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-lilac">
@@ -196,12 +210,11 @@ function Dashboard() {
               </p>
 
               <p className="text-sm mt-1">
-                Status:{" "}
-                {task.completed ? "Completed ✅" : "Pending ⏳"}
+                Status: {task.completed ? "Completed ✅" : "Pending ⏳"}
               </p>
 
               <div className="flex flex-col md:flex-row gap-2 mt-4">
-                
+
                 <button
                   onClick={() => handleDeleteTask(task._id)}
                   className="bg-red-500 text-white px-3 py-1 rounded w-full"
