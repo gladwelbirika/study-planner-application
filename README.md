@@ -51,7 +51,7 @@ The project is deployed on Vercel and automatically updates on push from GitHub.
 ---
 
 ## Live Demo
-Replace with your deployed link
+https://study-planner-application-liart.vercel.app/
 
 ---
 
