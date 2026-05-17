@@ -99,6 +99,26 @@ function Dashboard() {
       alert(error.response?.data?.message || "Failed to delete task");
     }
   };
+  // TOGGLE TASK COMPLETION
+const handleToggleComplete = async (task) => {
+  try {
+    await API.put(
+      `/tasks/${task._id}`,
+      {
+        completed: !task.completed,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    fetchTasks();
+  } catch (error) {
+    alert("Failed to update task");
+  }
+};
 
   return (
     <div style={{ padding: "20px" }}>
