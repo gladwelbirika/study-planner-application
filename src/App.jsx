@@ -21,7 +21,18 @@ function App() {
     )
   }
 />
-<Route path="/admin" element={<Admin />} />
+<Route
+  path="/admin"
+  element={
+    localStorage.getItem("token") &&
+    localStorage.getItem("role") === "admin" ? (
+      <Admin />
+    ) : (
+      <Login />
+    )
+  }
+/>
+
       </Routes>
     </Router>
   );
