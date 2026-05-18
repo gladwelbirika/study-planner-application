@@ -4,9 +4,8 @@ const router = express.Router();
 const Task = require("../models/Task");
 const { protect } = require("../middleware/authMiddleware");
 
-// ======================
-// CREATE TASK
-// ======================
+
+// create task
 router.post("/", protect, async (req, res) => {
   try {
     const { title, description, priority, deadline } = req.body;
@@ -25,9 +24,7 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
-// ======================
-// GET USER TASKS
-// ======================
+// get user tasks
 router.get("/", protect, async (req, res) => {
   try {
     const tasks = await Task.find({ user: req.user._id }).sort({ createdAt: -1 });
@@ -37,9 +34,8 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
-// ======================
-// UPDATE TASK
-// ======================
+
+// update task
 router.put("/:id", protect, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -64,9 +60,7 @@ router.put("/:id", protect, async (req, res) => {
   }
 });
 
-// ======================
-// DELETE TASK
-// ======================
+// delete task
 router.delete("/:id", protect, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);

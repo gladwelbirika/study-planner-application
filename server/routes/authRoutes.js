@@ -7,9 +7,7 @@ const jwt = require("jsonwebtoken");
 
 const { protect } = require("../middleware/authMiddleware");
 
-// ======================
-// REGISTER USER
-// ======================
+// register user
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -47,9 +45,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ======================
-// LOGIN USER
-// ======================
+// login user
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -94,9 +90,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ======================
-// PROFILE (PROTECTED ROUTE)
-// ======================
+// profile route
 router.get("/profile", protect, async (req, res) => {
   res.json(req.user);
 });

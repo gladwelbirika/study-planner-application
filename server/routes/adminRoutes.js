@@ -8,9 +8,8 @@ const { protect } = require("../middleware/authMiddleware");
 const { admin } = require("../middleware/adminMiddleware");
 
 
-// ======================
-// GET ALL USERS
-// ======================
+// get all users
+
 router.get("/users", protect, admin, async (req, res) => {
   try {
     const users = await User.find().select("-password");
@@ -24,9 +23,7 @@ router.get("/users", protect, admin, async (req, res) => {
 });
 
 
-// ======================
-// GET ALL TASKS
-// ======================
+// get all tasks
 router.get("/tasks", protect, admin, async (req, res) => {
   try {
     const tasks = await Task.find().populate("user", "name email");
@@ -39,10 +36,7 @@ router.get("/tasks", protect, admin, async (req, res) => {
   }
 });
 
-
-// ======================
-// DELETE ANY TASK
-// ======================
+// delete any task
 router.delete("/tasks/:id", protect, admin, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
