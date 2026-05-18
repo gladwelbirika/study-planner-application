@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
-import { isAuthenticated } from "./utils/auth";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -13,24 +13,21 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* PROTECTED DASHBOARD */}
         <Route
           path="/dashboard"
           element={
-            isAuthenticated() ? <Dashboard /> : <Login />
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
           }
         />
 
-        {/* PROTECTED ADMIN */}
         <Route
           path="/admin"
           element={
-            isAuthenticated() &&
-            localStorage.getItem("role") === "admin" ? (
+            <ProtectedRoute>
               <Admin />
-            ) : (
-              <Login />
-            )
+            </ProtectedRoute>
           }
         />
       </Routes>
