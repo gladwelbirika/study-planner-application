@@ -2,12 +2,16 @@ import { useState } from "react";
 import API from "../utils/api";
 import { useNavigate, Link } from "react-router-dom";
 
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../utils/firebase";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
+  // EMAIL/PASSWORD LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -19,11 +23,9 @@ function Login() {
 
       console.log(res.data);
 
-      // store auth data
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
 
-      // ✅ FIX: use react navigation instead of full page reload
       const role = res.data.user.role;
 
       if (role === "admin") {
@@ -34,6 +36,23 @@ function Login() {
 
     } catch (err) {
       alert("Login failed");
+    }
+  };
+
+  // GOOGLE LOGIN
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+
+      const user = result.user;
+
+      localStorage.setItem("token", await user.getIdToken());
+      localStorage.setItem("role", "user");
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+      alert("Google login failed");
     }
   };
 
@@ -69,6 +88,15 @@ function Login() {
             className="w-full bg-lilac text-white py-3 rounded-lg hover:opacity-90 transition"
           >
             Login
+          </button>
+
+          {/* GOOGLE LOGIN BUTTON */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full border py-2 mt-2"
+          >
+            Continue with Google
           </button>
 
         </form>
